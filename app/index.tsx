@@ -5,16 +5,16 @@ import { useRouter } from "expo-router";
 import { getTokens } from "@/utils";
 
 const index = () => {
-  // const { navigate } = useRouter();
+  const { navigate } = useRouter();
 
-  // useEffect(() => {
-  //   (async () => {
-  //     const tokens = await getTokens();
-  //     if (tokens?.accessToken) {
-  //       navigate("(tabs)");
-  //     }
-  //   })();
-  // }, []);
+  useEffect(() => {
+    (async () => {
+      const tokens = await getTokens();
+      if (tokens?.accessToken) {
+        navigate("(tabs)");
+      }
+    })();
+  }, []);
   return (
     <View className="flex-1">
       <Image
