@@ -170,17 +170,21 @@ const Ride = () => {
         )}
       </MapView>
       <View className=" w-full h-[15vh] p-3 bg-white space-y-2">
-        <Text className="text-xl font-bold">Ride Details</Text>
-        <View className="space-x-3  ">
-          <Text>
-            {!arrived
-              ? `Picking up ${details.passenger.name} at ${details.pickupLocation.placeName}`
-              : `Waiting for ${details.passenger.name} at pickup`}
-          </Text>
-        </View>
-        <TouchableOpacity className="absolute right-5 bg-orangeFade w-8 h-8 items-center justify-center rounded-full">
-          <PhoneIcon color={Colors.dark.primary} />
-        </TouchableOpacity>
+        {!complete && (
+          <>
+            <Text className="text-xl font-bold">Ride Details</Text>
+            <View className="space-x-3  ">
+              <Text>
+                {!arrived
+                  ? `Picking up ${details.passenger.name} at ${details.pickupLocation.placeName}`
+                  : `Waiting for ${details.passenger.name} at pickup`}
+              </Text>
+            </View>
+            <TouchableOpacity className="absolute right-5 bg-orangeFade w-8 h-8 items-center justify-center rounded-full">
+              <PhoneIcon color={Colors.dark.primary} />
+            </TouchableOpacity>
+          </>
+        )}
         {!arrived && (
           <TouchableOpacity
             onPress={handleArrival}
@@ -197,7 +201,7 @@ const Ride = () => {
             <Text className="text-white text-base">Start Trip</Text>
           </TouchableOpacity>
         )}
-        {start && (
+        {start && !complete && (
           <TouchableOpacity
             onPress={handleEnd}
             className="bg-primary p-2 items-center my-3 rounded-lg"
@@ -208,7 +212,7 @@ const Ride = () => {
 
         {complete && (
           <View className="flex-1 items-center justify-center">
-            <Text className="text-xl font-bold">
+            <Text className="text-lg  font-bold">
               Ride Completed, {details.passenger.name} will pay GH₵
               {details.price.toFixed(2)}
             </Text>
