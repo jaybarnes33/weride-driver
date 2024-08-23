@@ -1,26 +1,16 @@
 import React, { useEffect, useState } from "react";
-import {
-  View,
-  Text,
-  FlatList,
-  TouchableOpacity,
-  Image,
-  ActivityIndicator,
-  Animated,
-  Easing,
-} from "react-native";
+import { View, Text, TouchableOpacity, ActivityIndicator } from "react-native";
 
 import { useLocation } from "@/context/Location";
 
 import MapView, { Marker, Polyline } from "react-native-maps";
 
-import { useRoute } from "@react-navigation/native";
 import { useNavigation, useRouter } from "expo-router";
 import { GooglePlaceDetail } from "react-native-google-places-autocomplete";
-import { ArrowLeftIcon, MapPinIcon } from "react-native-heroicons/outline";
+import { MapPinIcon } from "react-native-heroicons/outline";
 import Colors from "@/constants/Colors";
 import CountdownTimer from "@/components/Main/Countdown";
-import { getTokens } from "@/utils";
+
 import useUser from "@/hooks/useUser";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useWebSocket } from "@/socket/SocketContext";
@@ -51,27 +41,18 @@ const Ride = () => {
       image: "🚙",
     },
   ];
-  const { back } = useRouter();
 
   const { push } = useRouter();
   const [directions, setDirections] = useState([]);
   const [ride, setRide] = useState<RideRequest>();
   const [rideType, setRideType] = useState<(typeof types)[0]>();
 
-  const handleRideType = (type: (typeof types)[0]) => {
-    setRideType(type);
-    setTimeout(() => {
-      setRideType(undefined);
-    }, 300000);
-
-    //Make api request and save driver
-  };
-
   const { user } = useUser();
   const [loading, setLoading] = useState(false);
   const dropoff = {} as GooglePlaceDetail;
   const [notVerified, setNotVerified] = useState(false);
   const { navigate } = useNavigation();
+
   useEffect(() => {
     if (location && dropoff.name) {
       console.log({ location, dropoff });
@@ -101,6 +82,7 @@ const Ride = () => {
     if (!user?.name) {
       push("account");
     } else {
+      await checkStatus();
     }
   }
 
@@ -135,6 +117,18 @@ const Ride = () => {
     }
   };
 
+  const checkStatus = async () => {
+    try {
+      const { data } = await axios.get(createURL(`/api/drivers/${user?._id}`));
+      if (data.verificationStatus !== "verified") {
+        setNotVerified(true);
+      } else {
+        setNotVerified(false);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
   webSocketManager.getSocket()?.on("new-request", (data) => {
     setRide(data);
   });

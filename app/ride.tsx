@@ -17,14 +17,21 @@ import MapView, { Marker, Polyline } from "react-native-maps";
 import { useRoute } from "@react-navigation/native";
 import { useRouter } from "expo-router";
 import { GooglePlaceDetail } from "react-native-google-places-autocomplete";
-import { ArrowLeftIcon, MapPinIcon } from "react-native-heroicons/outline";
+import {
+  ArrowLeftIcon,
+  MapPinIcon,
+  PhoneIcon,
+} from "react-native-heroicons/outline";
 import Colors from "@/constants/Colors";
 import CountdownTimer from "@/components/Main/Countdown";
 import { RideRequest } from "@/types/ride";
+import { createURL } from "@/utils/api";
+import axios from "axios";
 
 const Ride = () => {
   const { location, setLocation } = useLocation();
   const [start, setStart] = useState(false);
+  const [complete, setComplete] = useState(false);
   const types = [
     {
       name: "Shared",
@@ -47,11 +54,32 @@ const Ride = () => {
   ];
   const { back } = useRouter();
   const { details } = useRoute().params as { details: RideRequest };
-
+  const [arrived, setArrived] = useState(false);
   const { dropoffLocation, pickupLocation } = details;
 
   const [directions, setDirections] = useState([]);
 
+  const handleArrival = async () => {
+    // send notification to passenger
+    await axios.put(createURL(`/api/requests/${details._id}/`), {
+      status: "arrived",
+    });
+    setArrived(true);
+  };
+
+  const handleStart = async () => {
+    await axios.put(createURL(`/api/requests/${details._id}/`), {
+      status: "started",
+    });
+    setStart(true);
+  };
+
+  const handleEnd = async () => {
+    await axios.put(createURL(`/api/requests/${details._id}/`), {
+      status: "completed",
+    });
+    setComplete(true);
+  };
   useEffect(() => {
     if (location && dropoffLocation) {
       const origin = `${location.longitude},${location.latitude}`;
@@ -145,10 +173,45 @@ const Ride = () => {
         <Text className="text-xl font-bold">Ride Details</Text>
         <View className="space-x-3  ">
           <Text>
-            Picking up {details.passenger.name} at{" "}
-            {details.pickupLocation.placeName}
+            {!arrived
+              ? `Picking up ${details.passenger.name} at ${details.pickupLocation.placeName}`
+              : `Waiting for ${details.passenger.name} at pickup`}
           </Text>
         </View>
+        <TouchableOpacity className="absolute right-5 bg-orangeFade w-8 h-8 items-center justify-center rounded-full">
+          <PhoneIcon color={Colors.dark.primary} />
+        </TouchableOpacity>
+        {!arrived && (
+          <TouchableOpacity
+            onPress={handleArrival}
+            className="bg-primary p-2 items-center my-3 rounded-lg"
+          >
+            <Text className="text-white text-base">I've Arrived</Text>
+          </TouchableOpacity>
+        )}
+        {arrived && !start && (
+          <TouchableOpacity
+            onPress={handleStart}
+            className="bg-primary p-2 items-center my-3 rounded-lg"
+          >
+            <Text className="text-white text-base">Start Trip</Text>
+          </TouchableOpacity>
+        )}
+        {start && (
+          <TouchableOpacity
+            onPress={handleEnd}
+            className="bg-primary p-2 items-center my-3 rounded-lg"
+          >
+            <Text className="text-white text-base">Complete Trip</Text>
+          </TouchableOpacity>
+        )}
+
+        {complete && (
+          <View className="flex-1 items-center justify-center">
+            <Text className="text-xl font-bold">Ride Completed</Text>
+            <Text className="text-lg">Thank you for being a good driver</Text>
+          </View>
+        )}
       </View>
     </View>
   );

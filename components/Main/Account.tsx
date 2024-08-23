@@ -6,6 +6,7 @@ import {
   Button,
   TouchableOpacity,
   KeyboardAvoidingView,
+  ActivityIndicator,
 } from "react-native";
 import { Image } from "expo-image";
 import useUser from "@/hooks/useUser"; // Adjust the import according to your actual hook
@@ -17,6 +18,7 @@ import { makeSecuredRequest } from "@/utils/makeSecuredRequest";
 import { getImageUrl, removeTokens } from "@/utils";
 import { useNavigation } from "expo-router";
 import { LatLng } from "react-native-maps";
+import { CheckCircleIcon } from "react-native-heroicons/solid";
 const Account = () => {
   const [form, setForm] = useState({
     name: "",
@@ -30,6 +32,8 @@ const Account = () => {
     },
   });
 
+  const [loading, setLoading] = useState(false);
+const [message, setMessage] = useState("");
   const { navigate } = useNavigation();
   const [image, setImage] = useState<ImagePicker.ImagePickerAsset>();
   const { user } = useUser();
@@ -54,6 +58,7 @@ const Account = () => {
 
   const handleFormSubmit = async () => {
     try {
+      setLoading(true);
       const { data: file, error } = await uploadFile(image!, user?._id);
 
       if (file || !image?.base64) {
@@ -68,9 +73,15 @@ const Account = () => {
       if (error) {
         console.log(error);
       }
+      setMessage("Details updated successfully");
+      setTimeout(() => {
+        setMessage("");
+        navigate("index" as never)
+      }, 3000);
     } catch (error) {
       console.log(error);
     } finally {
+setLoading(false);
     }
   };
 
@@ -93,6 +104,12 @@ const Account = () => {
   };
   return (
     <KeyboardAvoidingView className="px-4 bg-white py-5">
+      {message && 
+      <View className="flex-row items-center justify-center bg-white">
+          <CheckCircleIcon color="green"/>
+        <Text >{message}</Text>
+      </View>
+      }
       <Text className="text-xl font-bold">Account</Text>
 
       {step === 1 && (
@@ -221,10 +238,13 @@ const Account = () => {
         {step > 1 && <Button title="Previous" onPress={prevStep} />}
         {step < 3 && <Button title="Next" onPress={nextStep} />}
         {step === 3 && (
-          <TouchableOpacity onPress={handleFormSubmit}>
-            <Text className="text-white bg-primary p-2 rounded-lg">
+          <TouchableOpacity className="flex-row justify-center  bg-black p-2 items-center " onPress={handleFormSubmit}>
+            <Text className="text-white ">
               Update Details
             </Text>
+            {
+              loading && <ActivityIndicator size="small" color="white" />
+            }
           </TouchableOpacity>
         )}
       </View>
