@@ -33,7 +33,7 @@ const Account = () => {
   });
 
   const [loading, setLoading] = useState(false);
-const [message, setMessage] = useState("");
+  const [message, setMessage] = useState("");
   const { navigate } = useNavigation();
   const [image, setImage] = useState<ImagePicker.ImagePickerAsset>();
   const { user } = useUser();
@@ -59,6 +59,7 @@ const [message, setMessage] = useState("");
   const handleFormSubmit = async () => {
     try {
       setLoading(true);
+      console.log({ user });
       const { data: file, error } = await uploadFile(image!, user?._id);
 
       if (file || !image?.base64) {
@@ -76,12 +77,12 @@ const [message, setMessage] = useState("");
       setMessage("Details updated successfully");
       setTimeout(() => {
         setMessage("");
-        navigate("index" as never)
+        navigate("index" as never);
       }, 3000);
     } catch (error) {
       console.log(error);
     } finally {
-setLoading(false);
+      setLoading(false);
     }
   };
 
@@ -104,12 +105,12 @@ setLoading(false);
   };
   return (
     <KeyboardAvoidingView className="px-4 bg-white py-5">
-      {message && 
-      <View className="flex-row items-center justify-center bg-white">
-          <CheckCircleIcon color="green"/>
-        <Text >{message}</Text>
-      </View>
-      }
+      {message && (
+        <View className="flex-row items-center justify-center bg-white">
+          <CheckCircleIcon color="green" />
+          <Text>{message}</Text>
+        </View>
+      )}
       <Text className="text-xl font-bold">Account</Text>
 
       {step === 1 && (
@@ -238,13 +239,12 @@ setLoading(false);
         {step > 1 && <Button title="Previous" onPress={prevStep} />}
         {step < 3 && <Button title="Next" onPress={nextStep} />}
         {step === 3 && (
-          <TouchableOpacity className="flex-row justify-center  bg-black p-2 items-center " onPress={handleFormSubmit}>
-            <Text className="text-white ">
-              Update Details
-            </Text>
-            {
-              loading && <ActivityIndicator size="small" color="white" />
-            }
+          <TouchableOpacity
+            className="flex-row justify-center  bg-black p-2 items-center "
+            onPress={handleFormSubmit}
+          >
+            <Text className="text-white ">Update Details</Text>
+            {loading && <ActivityIndicator size="small" color="white" />}
           </TouchableOpacity>
         )}
       </View>

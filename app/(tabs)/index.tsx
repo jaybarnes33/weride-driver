@@ -59,7 +59,7 @@ const Ride = () => {
       const origin = `${location.longitude},${location.latitude}`;
       const destination = `${dropoff.geometry.location.lng},${dropoff.geometry.location.lat}`;
       fetch(
-        `https://api.mapbox.com/directions/v5/mapbox/walking/${origin};${destination}?geometries=geojson&access_token=${process.env.EXPO_PUBLIC_MAPBOX}&steps=true`
+        `https://api.mapbox.com/directions/v5/mapbox/driving/${origin};${destination}?geometries=geojson&access_token=${process.env.EXPO_PUBLIC_MAPBOX}&steps=true`
       )
         .then(async (response) => {
           const data = await response.json();
