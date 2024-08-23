@@ -18,16 +18,15 @@ interface contextProps {
 const LocationContext = createContext<contextProps | null>(null);
 
 export const LocationProvider = ({ children }: { children: ReactNode }) => {
-  const fallbackLocation = {
-    latitude: 5.29822,
-    longitude: -2.0,
-  };
-
   const [location, setLocation] = useState<LatLng>({
     latitude: 0,
     longitude: 0,
   });
 
+  const fallBackLocation = {
+    latitude: 5.29822,
+    longitude: -2.0,
+  };
   useEffect(() => {
     (async () => {
       let { status } = await Geolocation.requestForegroundPermissionsAsync();
@@ -42,7 +41,8 @@ export const LocationProvider = ({ children }: { children: ReactNode }) => {
             },
             (location) => {
               setLocation({
-                ...fallbackLocation,
+                latitude: location.coords.latitude,
+                longitude: location.coords.longitude,
               });
             }
           );
@@ -51,7 +51,9 @@ export const LocationProvider = ({ children }: { children: ReactNode }) => {
     })();
   }, []);
   return (
-    <LocationContext.Provider value={{ location, setLocation }}>
+    <LocationContext.Provider
+      value={{ location: fallBackLocation, setLocation }}
+    >
       {children}
     </LocationContext.Provider>
   );
