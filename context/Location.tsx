@@ -18,6 +18,11 @@ interface contextProps {
 const LocationContext = createContext<contextProps | null>(null);
 
 export const LocationProvider = ({ children }: { children: ReactNode }) => {
+  const fallbackLocation = {
+    latitude: 5.29822,
+    longitude: -2.0,
+  };
+
   const [location, setLocation] = useState<LatLng>({
     latitude: 0,
     longitude: 0,
@@ -37,14 +42,7 @@ export const LocationProvider = ({ children }: { children: ReactNode }) => {
             },
             (location) => {
               setLocation({
-                latitude:
-                  location.coords.latitude != 0
-                    ? location.coords.latitude
-                    : 6.5244,
-                longitude:
-                  location.coords.longitude != 0
-                    ? location.coords.longitude
-                    : -1.222,
+                ...fallbackLocation,
               });
             }
           );
