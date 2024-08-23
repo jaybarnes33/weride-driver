@@ -44,7 +44,7 @@ const Auth = () => {
     }
   };
   return (
-    <SafeAreaView className="px-4 space-y-4">
+    <SafeAreaView className="px-4 pt-5 space-y-4">
       <Text className="font-bold text-xl">
         Please provide your details to continue
       </Text>

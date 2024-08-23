@@ -97,7 +97,12 @@ const Ride = () => {
         }}
       >
         {location && (
-          <Marker coordinate={location}>
+          <Marker
+            coordinate={{
+              latitude: location?.latitude,
+              longitude: location?.longitude,
+            }}
+          >
             <TouchableOpacity className="h-10 w-10 bg-white items-center justify-center shadow rounded-full">
               <MapPinIcon color={Colors.dark.primary} />
             </TouchableOpacity>

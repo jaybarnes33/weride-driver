@@ -193,8 +193,8 @@ const Ride = () => {
             style={{ flex: 1 }}
             camera={{
               center: {
-                latitude: location?.latitude ?? 0,
-                longitude: location?.longitude ?? 0,
+                latitude: location?.latitude || 5.2321,
+                longitude: location?.longitude || -1.433,
               },
               pitch: 0.3,
               heading: 0,
@@ -203,7 +203,12 @@ const Ride = () => {
             }}
           >
             {location && (
-              <Marker coordinate={location}>
+              <Marker
+                coordinate={{
+                  latitude: location?.latitude,
+                  longitude: location?.longitude,
+                }}
+              >
                 <TouchableOpacity className="h-10 w-10 bg-white items-center justify-center shadow rounded-full">
                   <MapPinIcon color={Colors.dark.primary} />
                 </TouchableOpacity>
@@ -217,7 +222,7 @@ const Ride = () => {
                 strokeColor={Colors.light.primary}
               />
             )}
-            {dropoff && (
+            {dropoff?.geometry?.location?.lat && (
               <Marker
                 coordinate={{
                   latitude: dropoff.geometry?.location.lat,
