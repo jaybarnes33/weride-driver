@@ -208,7 +208,10 @@ const Ride = () => {
 
         {complete && (
           <View className="flex-1 items-center justify-center">
-            <Text className="text-xl font-bold">Ride Completed</Text>
+            <Text className="text-xl font-bold">
+              Ride Completed, {details.passenger.name} will pay GH₵
+              {details.price.toFixed(2)}
+            </Text>
             <Text className="text-lg">Thank you for being a good driver</Text>
           </View>
         )}
